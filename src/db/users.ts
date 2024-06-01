@@ -7,7 +7,8 @@ const UserSchema = new mongoose.Schema(
     dateOfBirth: { type: Date, required: true },
     placeOfBirth: { type: String, required: true },
     utcOffset: { type: Number, required: true }, // save offset in minutes
-    email: { type: String, required: true },
+    email: { type: String, required: true }, //email as unique identifier
+    location: { type: String, required: true },
     // isDeleted: Boolean // just in case need softdelete
   },
   {

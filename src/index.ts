@@ -1,9 +1,9 @@
 import express from "express";
 import http from "http";
 import mongoose from "mongoose";
-import { cronBirthdayReminder } from "./services/birthdayReminder";
+import { cronBirthdayReminder } from "./services/reminder/birthdayReminder";
 require("dotenv").config();
-import { BirthdayConsumer } from "./services/birthdayConsumer";
+import { BirthdayConsumer } from "./consumer/birthdayConsumer";
 
 import router from "./router";
 
@@ -25,7 +25,7 @@ mongoose.connection.on("error", (error: Error) => console.log(error));
 app.use("/", router());
 
 // cron tasks
-cronBirthdayReminder;
+cronBirthdayReminder();
 
 // queue consumer
 const bc = new BirthdayConsumer()

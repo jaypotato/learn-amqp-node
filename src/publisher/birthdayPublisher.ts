@@ -1,6 +1,7 @@
 import amqp from "amqplib/callback_api.js";
+import { PublisherInterface } from "./publisherInterface";
 
-export class BirthdayPublisher {
+export class BirthdayPublisher implements PublisherInterface{
   rabbit;
   constructor() {
     this.rabbit = amqp;

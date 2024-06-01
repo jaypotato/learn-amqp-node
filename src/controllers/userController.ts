@@ -1,21 +1,32 @@
 import express from "express";
-import moment from 'moment'
+import moment from "moment";
+import momentTZ from "moment-timezone";
 import * as User from "./../db/users";
 
 export default {
   createUser: async (req: express.Request, res: express.Response) => {
     try {
-      const { email, firstName, lastName, dateOfBirth, placeOfBirth, utcOffset } =
-        req.body;
+      const {
+        email,
+        firstName,
+        lastName,
+        dateOfBirth,
+        placeOfBirth,
+        location,
+      } = req.body;
 
       const isUserExists = await User.getUserByEmail(email);
-      if (isUserExists) throw new Error;
+      if (isUserExists) throw new Error();
 
-      if (utcOffset < -12 || utcOffset > 14) throw new Error;
+      if (momentTZ.tz.zone(location) === null) {
+        return res.sendStatus(422);
+      }
 
-      const formatString = 'DD-MM-YYYY';
+      const formatString = "DD-MM-YYYY";
       const dob = moment.utc(dateOfBirth, formatString);
-      if (!dob.isValid) throw new Error;
+      if (!dob.isValid) throw new Error();
+
+      const utcOffset = momentTZ.tz(location)?.utcOffset();
       const user = await User.createUser({
         email,
         firstName,
@@ -23,8 +34,9 @@ export default {
         dateOfBirth: dob,
         placeOfBirth,
         utcOffset, // this will be handled by FE to get current user timezone and tells the BE
+        location,
       });
-      return res.status(200).json(user).end()
+      return res.status(200).json(user).end();
     } catch (error) {
       console.log(error);
       return res.sendStatus(422);
@@ -58,9 +70,9 @@ export default {
       }
 
       if (req.body.dateOfBirth) {
-        const formatString = 'DD-MM-YYYY';
+        const formatString = "DD-MM-YYYY";
         const dob = moment.utc(req.body.dateOfBirth, formatString);
-        if (!dob.isValid) throw new Error;
+        if (!dob.isValid) throw new Error();
         user.dateOfBirth = dob.toDate() || user.dateOfBirth;
       }
 

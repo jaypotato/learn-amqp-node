@@ -1,14 +1,17 @@
 import axios from "axios";
 import amqp from "amqplib/callback_api.js";
-import { UserModel } from "./../db/users";
+import { UserModel } from "../db/users";
+import { ConsumerInterface } from "./consumerInterface";
+import moment from 'moment';
 
-export class BirthdayConsumer {
+export class BirthdayConsumer implements ConsumerInterface {
   rabbit;
   constructor() {
     this.rabbit = amqp;
   }
 
   consume(): void {
+    console.log('consuming...')
     this.rabbit.connect(
       `amqp://${process.env.RABBIT_USERNAME}:${process.env.RABBIT_PASSWORD}@${process.env.RABBIT_HOST}:${process.env.RABBIT_PORT}/`,
       function (error, connection) {
@@ -34,7 +37,7 @@ export class BirthdayConsumer {
                  * just in case, when message are queued, users changes their birthday date, then we won't process that
                  */
                 const user = await UserModel.findById(contents._id);
-                if (contents.dateOfBirth !== user?.dateOfBirth) return;
+                if (new Date(contents.dateOfBirth).getTime() != user?.dateOfBirth.getTime()) return;
 
                 /**
                  * send the email
