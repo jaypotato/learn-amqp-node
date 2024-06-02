@@ -10,5 +10,5 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true
     },
-    "include": ["src/**/*", "environment.d.ts"]
+    "include": ["src/**/*", "environment.d.ts", "__tests__"]
 }
